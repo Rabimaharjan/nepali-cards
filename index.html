@@ -64,25 +64,26 @@ const CARDS = [
  ['n19','Goodbyes','See you again','फेरि भेटौँला','Pheri bhetaunlaa'],
  ['n20','Feelings','I love you (to elders)','म तपाईंलाई माया गर्छु','Ma tapaailaai maayaa garchhu']
 ];
-// Browsers try these in order; wav is last so it works everywhere.
-const TYPES = [['ogg','audio/ogg'],['m4a','audio/mp4'],['mp3','audio/mpeg'],['wav','audio/wav']];
+// Your recordings' file ending. Change to 'mp3' or 'wav' if your files use that instead.
+const EXT = 'm4a';
 let current = null, currentBtn = null;
 
 function play(id, btn, msg){
-  if (current){ current.pause(); if(currentBtn) currentBtn.classList.remove('on'); }
-  const a = document.createElement('audio');
-  TYPES.forEach(([ext,type])=>{
-    const s = document.createElement('source');
-    s.src = 'audio/' + id + '.' + ext; s.type = type; a.appendChild(s);
-  });
-  a.lastChild.addEventListener('error', ()=>{ msg.textContent = 'Audio not added yet'; btn.classList.remove('on'); });
+  if (current){ current.pause(); if (currentBtn) currentBtn.classList.remove('on'); }
+  const url = 'audio/' + id + '.' + EXT;
+  const a = new Audio(url);
   a.addEventListener('playing', ()=>{ msg.textContent = ''; btn.classList.add('on'); });
   a.addEventListener('ended', ()=> btn.classList.remove('on'));
-  current = a; currentBtn = btn;
-  msg.textContent = '';
-  a.play().catch(()=>{});
+  a.addEventListener('error', ()=>{
+    btn.classList.remove('on');
+    fetch(url, {method:'HEAD'})
+      .then(r => { msg.textContent = r.ok ? 'This device could not play the file' : 'Audio not added yet'; })
+      .catch(() => { msg.textContent = 'Could not load audio'; });
+  });
+  current = a; currentBtn = btn; msg.textContent = '';
+  const p = a.play(); if (p) p.catch(()=>{});
 }
-
+  
 function cardEl(c){
   const [id,cat,eng,deva,rom] = c;
   const d = document.createElement('div'); d.className = 'card';
