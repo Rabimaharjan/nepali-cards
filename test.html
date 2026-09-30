@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Audio test</title>
+<style>
+body{font:16px/1.4 system-ui,-apple-system,sans-serif;margin:16px;max-width:640px}
+h1{font-size:1.3rem;margin:0 0 6px}
+h2{font-size:1.05rem;margin:20px 0 6px}
+button{font-size:1rem;padding:12px 16px;margin:4px 4px 4px 0;border-radius:10px;border:1px solid #999;background:#fff}
+pre{background:#f1f1f1;padding:10px;white-space:pre-wrap;word-break:break-word;font-size:.8rem;border-radius:8px}
+@media (prefers-color-scheme:dark){body{background:#111;color:#eee}pre{background:#222}button{background:#333;color:#eee}a{color:#8ab4ff}}
+</style>
+</head>
+<body>
+<h1>Audio test (card n01)</h1>
+<p>Do each test in order and note which ones you can hear. Then take a screenshot of the whole page, including the Details box at the bottom.</p>
+
+<h2>Test 1: beep</h2>
+<button id="b1">Play beep</button>
+
+<h2>Test 2: plain audio player</h2>
+<audio id="a2" controls preload="auto" src="audio/n01.m4a" style="width:100%"></audio>
+
+<h2>Test 3: play by script</h2>
+<button id="b3">Play n01 by script</button>
+
+<h2>Test 4: open the file directly</h2>
+<p><a href="audio/n01.m4a">Open audio/n01.m4a</a> (then press play in the page that opens)</p>
+
+<h2>Details</h2>
+<pre id="log"></pre>
+
+<script>
+const L = document.getElementById('log');
+const log = t => { L.textContent += t + '\n'; };
+log('Browser: ' + navigator.userAgent);
+const probe = document.createElement('audio');
+['audio/mp4','audio/mp4; codecs="mp4a.40.2"','audio/mp4; codecs="alac"','audio/mpeg','audio/wav']
+  .forEach(t => log('canPlayType ' + t + ': ' + (probe.canPlayType(t) || 'no')));
+fetch('audio/n01.m4a', {method:'HEAD'})
+  .then(r => log('File: HTTP ' + r.status + ', type ' + r.headers.get('content-type') + ', size ' + r.headers.get('content-length')))
+  .catch(e => log('File check failed: ' + e));
+
+document.getElementById('b1').onclick = () => {
+  try {
+    const C = window.AudioContext || window.webkitAudioContext;
+    const c = new C(); const o = c.createOscillator(); const g = c.createGain();
+    g.gain.value = 0.2; o.connect(g); g.connect(c.destination); o.start(); o.stop(c.currentTime + 0.6);
+    log('Test 1: beep started, audio engine state: ' + c.state);
+  } catch (e) { log('Test 1 error: ' + e); }
+};
+
+const a2 = document.getElementById('a2');
+['loadedmetadata','canplay','play','playing','ended'].forEach(ev => a2.addEventListener(ev, () => log('Test 2: ' + ev + (ev==='loadedmetadata' ? ' (length ' + a2.duration + 's)' : ''))));
+a2.addEventListener('error', () => log('Test 2 error code ' + (a2.error && a2.error.code) + ' ' + ((a2.error && a2.error.message) || '')));
+
+document.getElementById('b3').onclick = () => {
+  const a = new Audio(); a.src = 'audio/n01.m4a';
+  ['loadstart','loadedmetadata','canplay','playing','ended','stalled','abort'].forEach(ev => a.addEventListener(ev, () => log('Test 3: ' + ev)));
+  a.addEventListener('error', () => log('Test 3 error code ' + (a.error && a.error.code) + ' ' + ((a.error && a.error.message) || '')));
+  const p = a.play();
+  if (p) p.then(() => log('Test 3: play() accepted. length ' + a.duration + 's, volume ' + a.volume + ', muted ' + a.muted))
+          .catch(e => log('Test 3: play() refused: ' + e.name + ' ' + e.message));
+};
+</script>
+</body>
+</html>
