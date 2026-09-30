@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nepali Cards</title>
+<style>
+:root{--bg:#fffaf5;--card:#fff;--ink:#222;--muted:#777;--accent:#b3261e;--line:#eadfd4}
+@media (prefers-color-scheme:dark){:root{--bg:#1b1715;--card:#26201d;--ink:#f2ebe4;--muted:#a89d93;--accent:#ff8a80;--line:#3a312c}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Devanagari","Mangal",sans-serif}
+header{padding:24px 16px 8px;text-align:center}
+h1{margin:0 0 4px;font-size:1.6rem}
+header p{margin:0;color:var(--muted)}
+main{max-width:980px;margin:0 auto;padding:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:4px}
+.meta{font-size:.78rem;color:var(--muted)}
+.eng{font-weight:700;font-size:1.05rem}
+.deva{font-size:2rem;font-weight:700;color:var(--accent);line-height:1.3;font-family:"Noto Sans Devanagari","Mangal","Nirmala UI",system-ui,sans-serif}
+.rom{font-style:italic;font-size:1.05rem}
+.row{display:flex;align-items:center;gap:10px;margin-top:8px}
+button.play{width:52px;height:52px;border-radius:50%;border:0;background:var(--accent);color:#fff;font-size:1.3rem;cursor:pointer}
+button.play.on{outline:3px solid var(--accent);outline-offset:3px}
+.msg{font-size:.85rem;color:var(--muted)}
+.single{max-width:520px;margin:0 auto}
+.single .card{padding:28px 22px;text-align:center;align-items:center}
+.single .deva{font-size:3rem}
+.single .eng{font-size:1.3rem}
+.single .rom{font-size:1.3rem}
+.single button.play{width:88px;height:88px;font-size:2.2rem;margin-top:10px}
+a.back{display:inline-block;margin-top:18px;color:var(--accent)}
+footer{text-align:center;color:var(--muted);font-size:.8rem;padding:20px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Nepali Cards</h1>
+  <p id="sub">Tap the button to hear each phrase</p>
+</header>
+<main><div id="app"></div></main>
+<footer>Deck 1 &middot; 20 phrases</footer>
+<script>
+// id, category, English, Devanagari, romanized
+const CARDS = [
+ ['n01','Greeting','Hello / Greetings','नमस्ते','Namaste'],
+ ['n02','Greeting','How are you? (polite)','तपाईंलाई कस्तो छ?','Tapaailaai kasto chha?'],
+ ['n03','Greeting','I am fine','म ठीक छु','Ma thik chhu'],
+ ['n04','Family','Mum','आमा','Aama'],
+ ['n05','Family','Dad','बुबा','Buba'],
+ ['n06','Family','Grandmother','हजुरआमा','Hajurama'],
+ ['n07','Family','Grandfather','हजुरबुबा','Hajurbuba'],
+ ['n08','Family','Older brother','दाइ','Daai'],
+ ['n09','Family','Older sister','दिदी','Didi'],
+ ['n10','Everyday','I want water','मलाई पानी चाहियो','Malai paani chahiyo'],
+ ['n11','Everyday','I am hungry','मलाई भोक लाग्यो','Malai bhok laagyo'],
+ ['n12','Everyday',"Let's eat",'खाना खाऔं','Khaana khaaun'],
+ ['n13','Everyday','I am sleepy','मलाई निद्रा लाग्यो','Malai nindraa laagyo'],
+ ['n14','Manners','Thank you','धन्यवाद','Dhanyabaad'],
+ ['n15','Manners','Sorry / Excuse me','माफ गर्नुहोस्','Maaf garnuhos'],
+ ['n16','Manners','Please','कृपया','Kripayaa'],
+ ['n17','Manners','Yes / No','हो / होइन','Ho / Hoina'],
+ ['n18','Goodbyes','Good night','शुभ रात्री','Shubha raatri'],
+ ['n19','Goodbyes','See you again','फेरि भेटौँला','Pheri bhetaunlaa'],
+ ['n20','Feelings','I love you (to elders)','म तपाईंलाई माया गर्छु','Ma tapaailaai maayaa garchhu']
+];
+// Browsers try these in order; wav is last so it works everywhere.
+const TYPES = [['ogg','audio/ogg'],['m4a','audio/mp4'],['mp3','audio/mpeg'],['wav','audio/wav']];
+let current = null, currentBtn = null;
+
+function play(id, btn, msg){
+  if (current){ current.pause(); if(currentBtn) currentBtn.classList.remove('on'); }
+  const a = document.createElement('audio');
+  TYPES.forEach(([ext,type])=>{
+    const s = document.createElement('source');
+    s.src = 'audio/' + id + '.' + ext; s.type = type; a.appendChild(s);
+  });
+  a.lastChild.addEventListener('error', ()=>{ msg.textContent = 'Audio not added yet'; btn.classList.remove('on'); });
+  a.addEventListener('playing', ()=>{ msg.textContent = ''; btn.classList.add('on'); });
+  a.addEventListener('ended', ()=> btn.classList.remove('on'));
+  current = a; currentBtn = btn;
+  msg.textContent = '';
+  a.play().catch(()=>{});
+}
+
+function cardEl(c){
+  const [id,cat,eng,deva,rom] = c;
+  const d = document.createElement('div'); d.className = 'card';
+  d.innerHTML = '<div class="meta"></div><div class="eng"></div><div class="deva"></div><div class="rom"></div>' +
+    '<div class="row"><button class="play" aria-label="Play">&#9654;</button><span class="msg"></span></div>';
+  d.children[0].textContent = id.toUpperCase().replace('N','N-') + '  \u00b7  ' + cat;
+  d.children[1].textContent = eng;
+  d.children[2].textContent = deva;
+  d.children[3].textContent = rom;
+  const btn = d.querySelector('button'), msg = d.querySelector('.msg');
+  btn.addEventListener('click', ()=> play(id, btn, msg));
+  return d;
+}
+
+const app = document.getElementById('app');
+const want = (new URLSearchParams(location.search).get('c') || '').toLowerCase();
+const one = CARDS.find(c => c[0] === want);
+if (one){
+  app.className = 'single';
+  app.appendChild(cardEl(one));
+  const a = document.createElement('a'); a.className = 'back'; a.href = location.pathname; a.textContent = 'See all cards';
+  app.appendChild(a);
+  document.getElementById('sub').textContent = 'Tap the button to hear it';
+} else {
+  const g = document.createElement('div'); g.className = 'grid';
+  CARDS.forEach(c => g.appendChild(cardEl(c)));
+  app.appendChild(g);
+}
+</script>
+</body>
+</html>
