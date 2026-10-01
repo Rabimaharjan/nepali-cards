@@ -5,34 +5,41 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Nepali Cards</title>
 <style>
-:root{--bg:#fffaf5;--card:#fff;--ink:#222;--muted:#777;--accent:#b3261e;--line:#eadfd4}
-@media (prefers-color-scheme:dark){:root{--bg:#1b1715;--card:#26201d;--ink:#f2ebe4;--muted:#a89d93;--accent:#ff8a80;--line:#3a312c}}
+:root{--bg:#fffaf5;--card:#fff;--ink:#222;--muted:#777;--accent:#b3261e;--line:#eadfd4;--f:#2e7d32;--e:#1f5fa8}
+@media (prefers-color-scheme:dark){:root{--bg:#1b1715;--card:#26201d;--ink:#f2ebe4;--muted:#a89d93;--accent:#ff8a80;--line:#3a312c;--f:#7bd17f;--e:#7db4f0}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Devanagari","Mangal",sans-serif}
 header{padding:24px 16px 8px;text-align:center}
 h1{margin:0 0 4px;font-size:1.6rem}
 header p{margin:0;color:var(--muted)}
 main{max-width:980px;margin:0 auto;padding:16px}
+h2.deck{margin:26px 0 10px;font-size:1.2rem}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:4px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:6px}
+.top{display:flex;align-items:center;justify-content:space-between}
 .meta{font-size:.78rem;color:var(--muted)}
+.pic{font-size:2.2rem;line-height:1}
+.form{display:flex;flex-direction:column;gap:2px;padding-top:6px}
+.form + .form{border-top:1px dashed var(--line);margin-top:6px;padding-top:12px}
+.tag{font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.form.f .tag,.form.f .deva{color:var(--f)}
+.form.e .tag,.form.e .deva{color:var(--e)}
+.form.plain .deva{color:var(--accent)}
 .eng{font-weight:700;font-size:1.05rem}
-.deva{font-size:2rem;font-weight:700;color:var(--accent);line-height:1.3;font-family:"Noto Sans Devanagari","Mangal","Nirmala UI",system-ui,sans-serif}
+.deva{font-size:2rem;font-weight:700;line-height:1.3;font-family:"Noto Sans Devanagari","Mangal","Nirmala UI",system-ui,sans-serif}
 .rom{font-style:italic;font-size:1.05rem}
 .row{display:flex;align-items:center;gap:10px;margin-top:8px}
 button.play{width:52px;height:52px;border-radius:50%;border:0;background:var(--accent);color:#fff;font-size:1.3rem;cursor:pointer}
-button.play.on{outline:3px solid var(--accent);outline-offset:3px}
+.form.f button.play{background:var(--f)}
+.form.e button.play{background:var(--e)}
+button.play.on{outline:3px solid currentColor;outline-offset:3px}
 .msg{font-size:.85rem;color:var(--muted)}
-.pic{margin-left:auto;font-size:2.2rem;line-height:1}
-.single .pic{margin-left:0;font-size:3rem}
-.single .row{flex-direction:column}
-h2.deck{margin:26px 0 10px;font-size:1.2rem}
 .single{max-width:520px;margin:0 auto}
-.single .card{padding:28px 22px;text-align:center;align-items:center}
-.single .deva{font-size:3rem}
-.single .eng{font-size:1.3rem}
-.single .rom{font-size:1.3rem}
-.single button.play{width:88px;height:88px;font-size:2.2rem;margin-top:10px}
+.single .card{padding:24px 22px}
+.single .deva{font-size:2.6rem}
+.single .eng{font-size:1.2rem}
+.single .rom{font-size:1.2rem}
+.single button.play{width:72px;height:72px;font-size:1.8rem}
 a.back{display:inline-block;margin-top:18px;color:var(--accent)}
 footer{text-align:center;color:var(--muted);font-size:.8rem;padding:20px}
 </style>
@@ -45,8 +52,8 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:20px}
 <main><div id="app"></div></main>
 <footer>2 decks &middot; 40 phrases</footer>
 <script>
-// id, category, English, Devanagari, romanized
-const CARDS = [
+// Deck 1: id, category, English, Devanagari, romanized
+const D1 = [
  ['n01','Greeting','Hello / Greetings','नमस्ते','Namaste'],
  ['n02','Greeting','How are you? (polite)','तपाईंलाई कस्तो छ?','Tapaailaai kasto chha?'],
  ['n03','Greeting','I am fine','म ठीक छु','Ma thik chhu'],
@@ -66,35 +73,41 @@ const CARDS = [
  ['n17','Manners','Yes / No','हो / होइन','Ho / Hoina'],
  ['n18','Goodbyes','Good night','शुभ रात्री','Shubha raatri'],
  ['n19','Goodbyes','See you again','फेरि भेटौँला','Pheri bhetaunlaa'],
- ['n20','Feelings','I love you (to elders)','म तपाईंलाई माया गर्छु','Ma tapaailaai maayaa garchhu'],
- ['n21','Do it','Come here','यता आऊ','Yata aau','👋'],
- ['n22','Do it','Sit down','बस','Bas','🪑'],
- ['n23','Do it','Stand up','उठ','Uth','🧍'],
- ['n24','Do it','Look','हेर','Her','👀'],
- ['n25','Do it','Listen','सुन','Sun','👂'],
- ['n26','Do it','Open the door','ढोका खोल','Dhoka khol','🚪'],
- ['n27','Do it','Close the door','ढोका बन्द गर','Dhoka banda gar','🔒'],
- ['n28','Do it','Wash your hands','हात धोऊ','Haat dhoau','🧼'],
- ['n29','Do it','Eat','खाऊ','Khaau','🍚'],
- ['n30','Do it','Drink','पिऊ','Piu','🥛'],
- ['n31','Do it','Clap','ताली बजाऊ','Taali bajaau','👏'],
- ['n32','Do it','Dance','नाच','Naach','💃'],
- ['n33','Do it','Stop','रोक','Rok','✋'],
- ['n34','Do it','Bring water','पानी ल्याऊ','Paani lyaau','💧'],
- ['n35','Body','Touch your nose','नाक छोऊ','Naak chhou','👃'],
- ['n36','Body','Close your eyes','आँखा बन्द गर','Aankha banda gar','😌'],
- ['n37','Body','Hands up','हात माथि उठाऊ','Haat maathi uthaau','🙌'],
- ['n38','Question','What is this?','यो के हो?','Yo ke ho?','❓'],
- ['n39','Question','What is your name?','तिम्रो नाम के हो?','Timro naam ke ho?','🙋'],
- ['n40','Question','Are you hungry?','तिमीलाई भोक लाग्यो?','Timilai bhok laagyo?','🍴']
+ ['n20','Feelings','I love you (to elders)','म तपाईंलाई माया गर्छु','Ma tapaailaai maayaa garchhu']
 ];
+// Deck 2: id, category, English (friends), Devanagari, romanized, picture, English (elders), Devanagari, romanized
+// Friends audio is n21..n40. Elders (polite) audio is e21..e40 (none for n38, which is the same for everyone).
+const D2 = [
+ ["n21","Do it","Come here","यता आऊ","Yeta aaunu","👋","Please come here","यता आउनुहोस्","Yeta aaunuhos"],
+ ["n22","Do it","Sit down","बस","Basa","🪑","Please sit down","बस्नुहोस्","Basnuhos"],
+ ["n23","Do it","Stand up","उठ","Utha","🧍","Please stand up","उठ्नुहोस्","Uthnuhos"],
+ ["n24","Do it","Look","हेर","Hera","👀","Please look","हेर्नुहोस्","Hernuhos"],
+ ["n25","Do it","Listen","सुन","Suna","👂","Please listen","सुन्नुहोस्","Sunnuhos"],
+ ["n26","Do it","Open the door","ढोका खोल","Dhoka khola","🚪","Please open the door","ढोका खोल्नुहोस्","Dhoka kholnuhos"],
+ ["n27","Do it","Close the door","ढोका बन्द गर","Dhoka banda gara","🔒","Please close the door","ढोका बन्द गर्नुहोस्","Dhoka banda garnuhos"],
+ ["n28","Do it","Wash your hands","हात धोऊ","Haat dhoau","🧼","Please wash your hands","हात धुनुहोस्","Haat dhunuhos"],
+ ["n29","Do it","Eat","खाऊ","Khaau","🍚","Please eat","खानुहोस्","Khaanuhos"],
+ ["n30","Do it","Drink","पिऊ","Piu","🥛","Please drink","पिउनुहोस्","Piunuhos"],
+ ["n31","Do it","Clap","ताली बजाऊ","Taali bajaau","👏","Please clap","ताली बजाउनुहोस्","Taali bajaaunuhos"],
+ ["n32","Do it","Dance","नाच","Naacha","💃","Please dance","नाच्नुहोस्","Naachnuhos"],
+ ["n33","Do it","Stop","रोक","Roka","✋","Please stop","रोक्नुहोस्","Roknuhos"],
+ ["n34","Do it","Bring water","पानी ल्याऊ","Paani lyaau","💧","Please bring water","पानी ल्याउनुहोस्","Paani lyaaunuhos"],
+ ["n35","Body","Touch your nose","नाक छोऊ","Naak chhou","👃","Please touch your nose","नाक छुनुहोस्","Naak chhunuhos"],
+ ["n36","Body","Close your eyes","आँखा बन्द गर","Aankha banda gara","😌","Please close your eyes","आँखा बन्द गर्नुहोस्","Aankha banda garnuhos"],
+ ["n37","Body","Hands up","हात माथि उठाऊ","Haat maathi uthaau","🙌","Please put your hands up","हात माथि उठाउनुहोस्","Haat maathi uthaaunuhos"],
+ ["n38","Question","What is this?","यो के हो?","Yo ke ho?","❓",null,null,null],
+ ["n39","Question","What is your name?","तिम्रो नाम के हो?","Timro naam ke ho?","🙋","What is your name? (to elders)","तपाईंको नाम के हो?","Tapaaiko naam ke ho?"],
+ ["n40","Question","Are you hungry?","तिमीलाई भोक लाग्यो?","Timilai bhok laagyo?","🍴","Are you hungry? (to elders)","तपाईंलाई भोक लाग्यो?","Tapaailaai bhok laagyo?"]
+];
+const CARDS = D1.concat(D2);
+
 // Your recordings' file ending. Change to 'mp3' or 'wav' if your files use that instead.
 const EXT = 'm4a';
 let current = null, currentBtn = null;
 
-function play(id, btn, msg){
+function play(fid, btn, msg){
   if (current){ current.pause(); if (currentBtn) currentBtn.classList.remove('on'); }
-  const url = 'audio/' + id + '.' + EXT;
+  const url = 'audio/' + fid + '.' + EXT;
   const a = new Audio(url);
   a.addEventListener('playing', ()=>{ msg.textContent = ''; btn.classList.add('on'); });
   a.addEventListener('ended', ()=> btn.classList.remove('on'));
@@ -108,23 +121,41 @@ function play(id, btn, msg){
   const p = a.play(); if (p) p.catch(()=>{});
 }
 
+function formEl(fid, tag, cls, eng, deva, rom){
+  const f = document.createElement('div'); f.className = 'form ' + cls;
+  f.innerHTML = '<div class="tag"></div><div class="eng"></div><div class="deva"></div><div class="rom"></div>' +
+    '<div class="row"><button class="play" aria-label="Play">&#9654;</button><span class="msg"></span></div>';
+  f.children[0].textContent = tag;
+  f.children[1].textContent = eng;
+  f.children[2].textContent = deva;
+  f.children[3].textContent = rom;
+  const btn = f.querySelector('button'), msg = f.querySelector('.msg');
+  btn.addEventListener('click', () => play(fid, btn, msg));
+  return f;
+}
+
 function cardEl(c){
-  const [id,cat,eng,deva,rom,pic] = c;
+  const [id,cat,eng,deva,rom,pic,engP,devaP,romP] = c;
   const d = document.createElement('div'); d.className = 'card';
-  d.innerHTML = '<div class="meta"></div><div class="eng"></div><div class="deva"></div><div class="rom"></div>' +
-    '<div class="row"><button class="play" aria-label="Play">&#9654;</button><span class="msg"></span><span class="pic"></span></div>';
-  d.children[0].textContent = id.toUpperCase().replace('N','N-') + '  \u00b7  ' + cat;
-  d.children[1].textContent = eng;
-  d.children[2].textContent = deva;
-  d.children[3].textContent = rom;
-  if (pic) d.querySelector('.pic').textContent = pic;
-  const btn = d.querySelector('button'), msg = d.querySelector('.msg');
-  btn.addEventListener('click', ()=> play(id, btn, msg));
+  const top = document.createElement('div'); top.className = 'top';
+  const meta = document.createElement('div'); meta.className = 'meta';
+  meta.textContent = id.toUpperCase().replace('N','N-') + '  \u00b7  ' + cat;
+  top.appendChild(meta);
+  if (pic){ const p = document.createElement('div'); p.className = 'pic'; p.textContent = pic; top.appendChild(p); }
+  d.appendChild(top);
+  if (devaP){
+    d.appendChild(formEl(id, 'Friends & younger', 'f', eng, deva, rom));
+    d.appendChild(formEl('e' + id.slice(1), 'Elders (polite)', 'e', engP, devaP, romP));
+  } else if (pic){
+    d.appendChild(formEl(id, 'Everyone', 'f', eng, deva, rom));
+  } else {
+    d.appendChild(formEl(id, '', 'plain', eng, deva, rom));
+  }
   return d;
 }
 
 const app = document.getElementById('app');
-const want = (new URLSearchParams(location.search).get('c') || '').toLowerCase();
+const want = (new URLSearchParams(location.search).get('c') || '').toLowerCase().replace(/^e/, 'n');
 const one = CARDS.find(c => c[0] === want);
 if (one){
   app.className = 'single';
