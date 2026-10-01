@@ -52,28 +52,28 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:20px}
 <main><div id="app"></div></main>
 <footer>2 decks &middot; 40 phrases</footer>
 <script>
-// Deck 1: id, category, English, Devanagari, romanized
+// Deck 1: same columns as Deck 2 below (no picture). Friends audio is n01..n20, elders audio is e02, e15, e17, e20.
 const D1 = [
- ['n01','Greeting','Hello / Greetings','नमस्ते','Namaste'],
- ['n02','Greeting','How are you? (polite)','तपाईंलाई कस्तो छ?','Tapaailaai kasto chha?'],
- ['n03','Greeting','I am fine','म ठीक छु','Ma thik chhu'],
- ['n04','Family','Mum','आमा','Aama'],
- ['n05','Family','Dad','बुबा','Buba'],
- ['n06','Family','Grandmother','हजुरआमा','Hajurama'],
- ['n07','Family','Grandfather','हजुरबुबा','Hajurbuba'],
- ['n08','Family','Older brother','दाइ','Daai'],
- ['n09','Family','Older sister','दिदी','Didi'],
- ['n10','Everyday','I want water','मलाई पानी चाहियो','Malai paani chahiyo'],
- ['n11','Everyday','I am hungry','मलाई भोक लाग्यो','Malai bhok laagyo'],
- ['n12','Everyday',"Let's eat",'खाना खाऔं','Khaana khaaun'],
- ['n13','Everyday','I am sleepy','मलाई निद्रा लाग्यो','Malai nindraa laagyo'],
- ['n14','Manners','Thank you','धन्यवाद','Dhanyabaad'],
- ['n15','Manners','Sorry / Excuse me','माफ गर्नुहोस्','Maaf garnuhos'],
- ['n16','Manners','Please','कृपया','Kripayaa'],
- ['n17','Manners','Yes / No','हो / होइन','Ho / Hoina'],
- ['n18','Goodbyes','Good night','शुभ रात्री','Shubha raatri'],
- ['n19','Goodbyes','See you again','फेरि भेटौँला','Pheri bhetaunlaa'],
- ['n20','Feelings','I love you (to elders)','म तपाईंलाई माया गर्छु','Ma tapaailaai maayaa garchhu']
+ ["n01","Greeting","Hello / Greetings","नमस्ते","Namaste",null,null,null,null],
+ ["n02","Greeting","How are you?","तिमीलाई कस्तो छ?","Timilai kasto chha?",null,"How are you?","तपाईंलाई कस्तो छ?","Tapaailaai kasto chha?"],
+ ["n03","Greeting","I am fine","म ठीक छु","Ma thik chhu",null,null,null,null],
+ ["n04","Family","Mum","आमा","Aama",null,null,null,null],
+ ["n05","Family","Dad","बुबा","Buba",null,null,null,null],
+ ["n06","Family","Grandmother","हजुरआमा","Hajurama",null,null,null,null],
+ ["n07","Family","Grandfather","हजुरबुबा","Hajurbuba",null,null,null,null],
+ ["n08","Family","Older brother","दाइ","Daai",null,null,null,null],
+ ["n09","Family","Older sister","दिदी","Didi",null,null,null,null],
+ ["n10","Everyday","I want water","मलाई पानी चाहियो","Malai paani chahiyo",null,null,null,null],
+ ["n11","Everyday","I am hungry","मलाई भोक लाग्यो","Malai bhok laagyo",null,null,null,null],
+ ["n12","Everyday","Let's eat","खाना खाऔं","Khaana khaaun",null,null,null,null],
+ ["n13","Everyday","I am sleepy","मलाई निद्रा लाग्यो","Malai nindraa laagyo",null,null,null,null],
+ ["n14","Manners","Thank you","धन्यवाद","Dhanyabaad",null,null,null,null],
+ ["n15","Manners","Sorry / Excuse me","माफ गर","Maaf gara",null,"Sorry / Excuse me","माफ गर्नुहोस्","Maaf garnuhos"],
+ ["n16","Manners","Please","कृपया","Kripayaa",null,null,null,null],
+ ["n17","Manners","Yes / No","हो / होइन","Ho / Hoina",null,"Yes / No","हजुर / होइन हजुर","Hajur / Hoina hajur"],
+ ["n18","Goodbyes","Good night","शुभ रात्री","Shubha raatri",null,null,null,null],
+ ["n19","Goodbyes","See you again","फेरि भेटौँला","Pheri bhetaunlaa",null,null,null,null],
+ ["n20","Feelings","I love you","म तिमीलाई माया गर्छु","Ma timilai maayaa garchhu",null,"I love you","म तपाईंलाई माया गर्छु","Ma tapaailaai maayaa garchhu"]
 ];
 // Deck 2: id, category, English (friends), Devanagari, romanized, picture, English (elders), Devanagari, romanized
 // Friends audio is n21..n40. Elders (polite) audio is e21..e40 (none for n38, which is the same for everyone).
@@ -146,10 +146,8 @@ function cardEl(c){
   if (devaP){
     d.appendChild(formEl(id, 'Friends & younger', 'f', eng, deva, rom));
     d.appendChild(formEl('e' + id.slice(1), 'Elders (polite)', 'e', engP, devaP, romP));
-  } else if (pic){
-    d.appendChild(formEl(id, 'Everyone', 'f', eng, deva, rom));
   } else {
-    d.appendChild(formEl(id, '', 'plain', eng, deva, rom));
+    d.appendChild(formEl(id, 'Everyone', 'f', eng, deva, rom));
   }
   return d;
 }
