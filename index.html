@@ -23,6 +23,10 @@ main{max-width:980px;margin:0 auto;padding:16px}
 button.play{width:52px;height:52px;border-radius:50%;border:0;background:var(--accent);color:#fff;font-size:1.3rem;cursor:pointer}
 button.play.on{outline:3px solid var(--accent);outline-offset:3px}
 .msg{font-size:.85rem;color:var(--muted)}
+.pic{margin-left:auto;font-size:2.2rem;line-height:1}
+.single .pic{margin-left:0;font-size:3rem}
+.single .row{flex-direction:column}
+h2.deck{margin:26px 0 10px;font-size:1.2rem}
 .single{max-width:520px;margin:0 auto}
 .single .card{padding:28px 22px;text-align:center;align-items:center}
 .single .deva{font-size:3rem}
@@ -39,7 +43,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:20px}
   <p id="sub">Tap the button to hear each phrase</p>
 </header>
 <main><div id="app"></div></main>
-<footer>Deck 1 &middot; 20 phrases</footer>
+<footer>2 decks &middot; 40 phrases</footer>
 <script>
 // id, category, English, Devanagari, romanized
 const CARDS = [
@@ -62,7 +66,27 @@ const CARDS = [
  ['n17','Manners','Yes / No','हो / होइन','Ho / Hoina'],
  ['n18','Goodbyes','Good night','शुभ रात्री','Shubha raatri'],
  ['n19','Goodbyes','See you again','फेरि भेटौँला','Pheri bhetaunlaa'],
- ['n20','Feelings','I love you (to elders)','म तपाईंलाई माया गर्छु','Ma tapaailaai maayaa garchhu']
+ ['n20','Feelings','I love you (to elders)','म तपाईंलाई माया गर्छु','Ma tapaailaai maayaa garchhu'],
+ ['n21','Do it','Come here','यता आऊ','Yata aau','👋'],
+ ['n22','Do it','Sit down','बस','Bas','🪑'],
+ ['n23','Do it','Stand up','उठ','Uth','🧍'],
+ ['n24','Do it','Look','हेर','Her','👀'],
+ ['n25','Do it','Listen','सुन','Sun','👂'],
+ ['n26','Do it','Open the door','ढोका खोल','Dhoka khol','🚪'],
+ ['n27','Do it','Close the door','ढोका बन्द गर','Dhoka banda gar','🔒'],
+ ['n28','Do it','Wash your hands','हात धोऊ','Haat dhoau','🧼'],
+ ['n29','Do it','Eat','खाऊ','Khaau','🍚'],
+ ['n30','Do it','Drink','पिऊ','Piu','🥛'],
+ ['n31','Do it','Clap','ताली बजाऊ','Taali bajaau','👏'],
+ ['n32','Do it','Dance','नाच','Naach','💃'],
+ ['n33','Do it','Stop','रोक','Rok','✋'],
+ ['n34','Do it','Bring water','पानी ल्याऊ','Paani lyaau','💧'],
+ ['n35','Body','Touch your nose','नाक छोऊ','Naak chhou','👃'],
+ ['n36','Body','Close your eyes','आँखा बन्द गर','Aankha banda gar','😌'],
+ ['n37','Body','Hands up','हात माथि उठाऊ','Haat maathi uthaau','🙌'],
+ ['n38','Question','What is this?','यो के हो?','Yo ke ho?','❓'],
+ ['n39','Question','What is your name?','तिम्रो नाम के हो?','Timro naam ke ho?','🙋'],
+ ['n40','Question','Are you hungry?','तिमीलाई भोक लाग्यो?','Timilai bhok laagyo?','🍴']
 ];
 // Your recordings' file ending. Change to 'mp3' or 'wav' if your files use that instead.
 const EXT = 'm4a';
@@ -83,16 +107,17 @@ function play(id, btn, msg){
   current = a; currentBtn = btn; msg.textContent = '';
   const p = a.play(); if (p) p.catch(()=>{});
 }
-  
+
 function cardEl(c){
-  const [id,cat,eng,deva,rom] = c;
+  const [id,cat,eng,deva,rom,pic] = c;
   const d = document.createElement('div'); d.className = 'card';
   d.innerHTML = '<div class="meta"></div><div class="eng"></div><div class="deva"></div><div class="rom"></div>' +
-    '<div class="row"><button class="play" aria-label="Play">&#9654;</button><span class="msg"></span></div>';
+    '<div class="row"><button class="play" aria-label="Play">&#9654;</button><span class="msg"></span><span class="pic"></span></div>';
   d.children[0].textContent = id.toUpperCase().replace('N','N-') + '  \u00b7  ' + cat;
   d.children[1].textContent = eng;
   d.children[2].textContent = deva;
   d.children[3].textContent = rom;
+  if (pic) d.querySelector('.pic').textContent = pic;
   const btn = d.querySelector('button'), msg = d.querySelector('.msg');
   btn.addEventListener('click', ()=> play(id, btn, msg));
   return d;
@@ -108,9 +133,12 @@ if (one){
   app.appendChild(a);
   document.getElementById('sub').textContent = 'Tap the button to hear it';
 } else {
-  const g = document.createElement('div'); g.className = 'grid';
-  CARDS.forEach(c => g.appendChild(cardEl(c)));
-  app.appendChild(g);
+  [['Deck 1: Everyday phrases', 0, 20], ['Deck 2: Do it!', 20, 40]].forEach(([title, a, b]) => {
+    const h = document.createElement('h2'); h.className = 'deck'; h.textContent = title; app.appendChild(h);
+    const g = document.createElement('div'); g.className = 'grid';
+    CARDS.slice(a, b).forEach(c => g.appendChild(cardEl(c)));
+    app.appendChild(g);
+  });
 }
 </script>
 </body>
